@@ -49,11 +49,15 @@ static void handle_status_update(void * data) {
 - (void)setMicro_pause_period:(float)f   { core->mini_interval = 60 * round(f); }
 - (void)setWork_break_duration:(float)f  { core->work_duration = 60 * round(f); }
 - (void)setWork_break_period:(float)f    { core->work_interval = 60 * round(f); }
+- (void)setPostpone_time:(float)f        { core->postpone_time = 60 * round(f); }
+- (void)setPostpone_discount:(float)f    { core->postpone_discount = f; }
 
 - (float)micro_pause_duration { return core->mini_duration; }
 - (float)micro_pause_period   { return core->mini_interval; }
 - (float)work_break_duration  { return core->work_duration; }
 - (float)work_break_period    { return core->work_interval; }
+- (float)postpone_time        { return core->postpone_time; }
+- (float)postpone_discount    { return core->postpone_discount; }
 
 - (void)installTimer:(double)interval
 {
@@ -134,6 +138,8 @@ static void handle_status_update(void * data) {
     core->mini_duration = 13;
     core->work_interval = 50*60;
     core->work_duration = 8*60;
+	core->postpone_time = 10*60;
+	core->postpone_discount = 0.5;
 
     core->emit_break_end = handle_break_end;
     core->emit_mini_break_start = handle_mini_break_start;
@@ -167,11 +173,13 @@ static void handle_status_update(void * data) {
     [self setBackground:background];
 
     // create initial values
-    NSMutableDictionary* initial = [NSMutableDictionary dictionaryWithCapacity:10];
+    NSMutableDictionary* initial = [NSMutableDictionary dictionaryWithCapacity:12];
     [initial setObject:[NSNumber numberWithFloat:4] forKey:@"micro_pause_period"];
     [initial setObject:[NSNumber numberWithFloat:13] forKey:@"micro_pause_duration"];
     [initial setObject:[NSNumber numberWithFloat:50] forKey:@"work_break_period"];
     [initial setObject:[NSNumber numberWithFloat:8] forKey:@"work_break_duration"];
+    [initial setObject:[NSNumber numberWithFloat:10] forKey:@"postpone_time"];
+    [initial setObject:[NSNumber numberWithFloat:0.5] forKey:@"postpone_discount"];
     [initial setObject:@"Smooth" forKey:@"sample_interval"];
     [initial setObject:[NSNumber numberWithBool:YES] forKey:@"draw_dock_image"];
     [initial setObject:[NSNumber numberWithBool:NO] forKey:@"lock_focus"];
@@ -186,6 +194,8 @@ static void handle_status_update(void * data) {
     [self bind:@"micro_pause_duration" toObject:dc withKeyPath:@"values.micro_pause_duration" options:nil];
     [self bind:@"work_break_period" toObject:dc withKeyPath:@"values.work_break_period" options:nil];
     [self bind:@"work_break_duration" toObject:dc withKeyPath:@"values.work_break_duration" options:nil];
+    [self bind:@"postpone_time" toObject:dc withKeyPath:@"values.postpone_time" options:nil];
+    [self bind:@"postpone_discount" toObject:dc withKeyPath:@"values.postpone_discount" options:nil];
     [self bind:@"sample_interval" toObject:dc withKeyPath:@"values.sample_interval" options:nil];
     [self bind:@"draw_dock_image" toObject:dc withKeyPath:@"values.draw_dock_image" options:nil];
     [self bind:@"lock_focus" toObject:dc withKeyPath:@"values.lock_focus" options:nil];
@@ -221,6 +231,7 @@ static void handle_status_update(void * data) {
     // update window
     [progress setDoubleValue:ai_break_progress(core)];
     [self drawTimeLeft:ai_break_time_left(core)];
+    [self drawNextBreak:ai_seconds_until_next_work_break(core)];
     [self drawNextBreak:ai_seconds_until_next_work_break(core)];
 
     // if user likes to be interrupted
@@ -358,6 +369,15 @@ static void handle_status_update(void * data) {
     } else {
         [next_break setStringValue:[NSString stringWithFormat:@"next break in %d minutes", minutes]];
     }
+}
+
+// displays next postpone length
+- (void)drawNextPostpone:(int)seconds {
+    int minutes = round(seconds / 60.0) ;
+    int seconds_rem = seconds % 60 ;
+
+    [next_postpone setStringValue:[NSString stringWithFormat:@"postpone duration %d minutes %d s", 
+		minutes, seconds_rem]];
 }
 
 // goto website

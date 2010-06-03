@@ -13,6 +13,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/time.h>
+#include <math.h>
 
 /** the state antirsi is in */
 typedef enum {
@@ -36,6 +37,8 @@ typedef struct _ai_core {
     double work_t;
     /** time the user has been taking a work break */
     double work_taking_t;
+	/** number of times the user has clicked postpone since the last break */
+	int num_postponements;
 
     // natural break continuation
     /** last #work_taking_t, for natural break continuation */
@@ -54,6 +57,8 @@ typedef struct _ai_core {
     int work_duration;
     /** the time postpone will set #work_t back */
     int postpone_time;
+	/** the factor by which successive postpone times are discounted */
+	double postpone_discount; // set to 1.0 to have no discounting
 
     /** 1 if no mini breaks are to be issues, 0 otherwise */
     int mini_disabled;
@@ -93,6 +98,8 @@ double ai_break_progress(ai_core * c);
 void ai_work_break_postpone(ai_core *c);
 /** will initiate a work break right now */
 void ai_work_break_now(ai_core *c);
+/** the discounted postpone time */
+int ai_discounted_postpone_time(ai_core *c);
 
 // natural break continuation
 /** 1 if a natural work break continuation is available, 0 otherwise */

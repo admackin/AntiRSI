@@ -55,8 +55,8 @@ ai_work_break_postpone(ai_core *c)
 {
   c->mini_t = 0;
   c->mini_taking_t = 0;
-
-  c->work_t = c->work_interval - c->postpone_time;
+  c->num_postponements++;
+  c->work_t = c->work_interval - ai_discounted_postpone_time(c);
   if (c->work_t < 0) c->work_t = 0;
   c->work_taking_t = 0;
 
@@ -64,6 +64,11 @@ ai_work_break_postpone(ai_core *c)
 
   if (c->emit_break_end) c->emit_break_end(c->user_data);
 }
+
+int ai_discounted_postpone_time(ai_core *c)
+{
+  return (int) round(pow((double) c->postpone_discount, (double) (c->num_postponements-1)) * c->postpone_time);
+}	
 
 void
 ai_work_break_now(ai_core *c)
@@ -296,6 +301,9 @@ ai_tick(ai_core * c, double idle_time)
 
           c->work_t = 0;
           c->work_taking_t = c->work_duration;
+		  
+		  // we've got to the natural end of a break - the postpone count goes to 0
+		  c->num_postponements = 0; 
 
           if (c->emit_break_end) c->emit_break_end(c->user_data);
 
@@ -325,7 +333,8 @@ antirsi_init(void * data)
   c->mini_interval = 4*60;
   c->work_duration = 8*60;
   c->work_interval = 50*60;
-  c->postpone_time = 10*60;
+  c->postpone_time = 6*60;
+  c->postpone_discount = 0.5;
 
   c->state = S_NORMAL;
 

@@ -24,6 +24,7 @@
     IBOutlet NSTextField *label;
     IBOutlet NSTextField *time;
     IBOutlet NSTextField *next_break;
+    IBOutlet NSTextField *next_postpone;
     IBOutlet NSTextField *version;
 
     IBOutlet NSMenuItem *menuBreakNow;
