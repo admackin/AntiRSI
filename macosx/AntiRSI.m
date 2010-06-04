@@ -49,7 +49,7 @@ static void handle_status_update(void * data) {
 - (void)setMicro_pause_period:(float)f   { core->mini_interval = 60 * round(f); }
 - (void)setWork_break_duration:(float)f  { core->work_duration = 60 * round(f); }
 - (void)setWork_break_period:(float)f    { core->work_interval = 60 * round(f); }
-- (void)setPostpone_time:(float)f        { core->postpone_time = 60 * round(f); }
+- (void)setPostpone_time:(float)f        { core->postpone_time = 60 * round(f); core->num_postponements = 0; }
 - (void)setPostpone_discount:(float)f    { core->postpone_discount = f; }
 
 - (float)micro_pause_duration { return core->mini_duration; }
@@ -373,10 +373,10 @@ static void handle_status_update(void * data) {
 
 // displays next postpone length
 - (void)drawNextPostpone:(int)seconds {
-    int minutes = round(seconds / 60.0) ;
+    int minutes = (int) floor(seconds / 60.0) ;
     int seconds_rem = seconds % 60 ;
 
-    [next_postpone setStringValue:[NSString stringWithFormat:@"postpone duration %d minutes %d s", 
+    [next_postpone setStringValue:[NSString stringWithFormat:@"next postpone for %d:%02d", 
 		minutes, seconds_rem]];
 }
 

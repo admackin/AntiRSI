@@ -55,7 +55,6 @@ ai_work_break_postpone(ai_core *c)
 {
   c->mini_t = 0;
   c->mini_taking_t = 0;
-  c->num_postponements++;
   c->work_t = c->work_interval - ai_discounted_postpone_time(c);
   if (c->work_t < 0) c->work_t = 0;
   c->work_taking_t = 0;
@@ -63,11 +62,12 @@ ai_work_break_postpone(ai_core *c)
   c->state = S_NORMAL;
 
   if (c->emit_break_end) c->emit_break_end(c->user_data);
+  c->num_postponements++;
 }
 
 int ai_discounted_postpone_time(ai_core *c)
 {
-  return (int) round(pow((double) c->postpone_discount, (double) (c->num_postponements-1)) * c->postpone_time);
+  return (int) round(pow((double) c->postpone_discount, (double) (c->num_postponements)) * c->postpone_time);
 }	
 
 void
@@ -79,6 +79,9 @@ ai_work_break_now(ai_core *c)
   }
 
   c->state = S_IN_WORK;
+
+  // if they take a break "early", should reset the postpone counter
+  c->num_postponements = 0;
 
   if (c->emit_work_break_start) c->emit_work_break_start(c->user_data);
 }
@@ -96,7 +99,7 @@ ai_continue_natural_work_break(ai_core *c)
     c->work_taking_t = c->last_work_taking_t;
   }
   c->state = S_IN_WORK;
-
+  
   if (c->emit_work_break_start) c->emit_work_break_start(c->user_data);
 }
 
