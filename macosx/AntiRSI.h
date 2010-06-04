@@ -101,5 +101,8 @@
 // time to next break string
 - (void)drawNextBreak:(int)seconds;
 
+// time to next break string
+- (void)drawNextPostpone:(int)seconds;
+
 @end
 

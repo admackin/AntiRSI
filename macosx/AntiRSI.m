@@ -232,7 +232,7 @@ static void handle_status_update(void * data) {
     [progress setDoubleValue:ai_break_progress(core)];
     [self drawTimeLeft:ai_break_time_left(core)];
     [self drawNextBreak:ai_seconds_until_next_work_break(core)];
-    [self drawNextBreak:ai_seconds_until_next_work_break(core)];
+    [self drawNextPostpone:ai_discounted_postpone_time(core)];
 
     // if user likes to be interrupted
     if (lock_focus) {
