@@ -49,14 +49,14 @@ static void handle_status_update(void * data) {
 - (void)setMicro_pause_period:(float)f   { core->mini_interval = 60 * round(f); }
 - (void)setWork_break_duration:(float)f  { core->work_duration = 60 * round(f); }
 - (void)setWork_break_period:(float)f    { core->work_interval = 60 * round(f); }
-- (void)setPostpone_time:(float)f        { core->postpone_time = 60 * round(f); core->num_postponements = 0; }
+- (void)setPostpone_duration:(float)f    { core->postpone_time = 60 * round(f); core->num_postponements = 0; }
 - (void)setPostpone_discount:(float)f    { core->postpone_discount = f; }
 
 - (float)micro_pause_duration { return core->mini_duration; }
 - (float)micro_pause_period   { return core->mini_interval; }
 - (float)work_break_duration  { return core->work_duration; }
 - (float)work_break_period    { return core->work_interval; }
-- (float)postpone_time        { return core->postpone_time; }
+- (float)postpone_duration    { return core->postpone_time; }
 - (float)postpone_discount    { return core->postpone_discount; }
 
 - (void)installTimer:(double)interval
@@ -178,7 +178,7 @@ static void handle_status_update(void * data) {
     [initial setObject:[NSNumber numberWithFloat:13] forKey:@"micro_pause_duration"];
     [initial setObject:[NSNumber numberWithFloat:50] forKey:@"work_break_period"];
     [initial setObject:[NSNumber numberWithFloat:8] forKey:@"work_break_duration"];
-    [initial setObject:[NSNumber numberWithFloat:10] forKey:@"postpone_time"];
+    [initial setObject:[NSNumber numberWithFloat:10] forKey:@"postpone_duration"];
     [initial setObject:[NSNumber numberWithFloat:0.5] forKey:@"postpone_discount"];
     [initial setObject:@"Smooth" forKey:@"sample_interval"];
     [initial setObject:[NSNumber numberWithBool:YES] forKey:@"draw_dock_image"];
@@ -194,7 +194,7 @@ static void handle_status_update(void * data) {
     [self bind:@"micro_pause_duration" toObject:dc withKeyPath:@"values.micro_pause_duration" options:nil];
     [self bind:@"work_break_period" toObject:dc withKeyPath:@"values.work_break_period" options:nil];
     [self bind:@"work_break_duration" toObject:dc withKeyPath:@"values.work_break_duration" options:nil];
-    [self bind:@"postpone_time" toObject:dc withKeyPath:@"values.postpone_time" options:nil];
+    [self bind:@"postpone_duration" toObject:dc withKeyPath:@"values.postpone_duration" options:nil];
     [self bind:@"postpone_discount" toObject:dc withKeyPath:@"values.postpone_discount" options:nil];
     [self bind:@"sample_interval" toObject:dc withKeyPath:@"values.sample_interval" options:nil];
     [self bind:@"draw_dock_image" toObject:dc withKeyPath:@"values.draw_dock_image" options:nil];
@@ -376,7 +376,7 @@ static void handle_status_update(void * data) {
     int minutes = (int) floor(seconds / 60.0) ;
     int seconds_rem = seconds % 60 ;
 
-    [next_postpone setStringValue:[NSString stringWithFormat:@"next postpone for %d:%02d", 
+    [postpone setTitle: [NSString stringWithFormat:@"Postpone for %d:%02d", 
 		minutes, seconds_rem]];
 }
 
