@@ -10,7 +10,7 @@
 #include "../antirsi-core/antirsi-core.h"
 
 #define sLatestVersionURL @"http://tech.inhelsinki.nl/antirsi/antirsi_version.txt"
-#define sURL @"http://tech.inhelsinki.nl/antirsi/"
+#define sURL @"http://github.com/admackin/AntiRSI"
 
 #define sMicroPause @"Micro Pause"
 #define sWorkBreak  @"Work Break"
