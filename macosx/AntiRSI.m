@@ -59,6 +59,9 @@ static void handle_status_update(void * data) {
 - (float)postpone_duration    { return core->postpone_time; }
 - (float)postpone_discount    { return core->postpone_discount; }
 
+- (float)max_postpone_discount { return 1.0; }
+- (float)min_postpone_discount { return 0.0; }
+
 - (void)installTimer:(double)interval
 {
     if (mtimer != nil) {
